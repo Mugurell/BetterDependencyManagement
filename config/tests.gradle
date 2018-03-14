@@ -1,0 +1,100 @@
+apply plugin: 'de.mannodermaus.android-junit5'
+apply plugin: 'jacoco'
+
+check.dependsOn 'de.mannodermaus.android-junit5', 'jacoco'
+
+jacoco {
+    toolVersion = '0.8.0'
+}
+
+android {
+    defaultConfig {
+        testInstrumentationRunner Deps.test_instrumentation_runner
+    }
+    sourceSets {
+        test.java.srcDirs += 'src/test/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
+    }
+}
+
+android.testOptions {
+    execution 'ANDROID_TEST_ORCHESTRATOR'
+    animationsDisabled true
+
+
+    unitTests {
+        all {
+            jvmArgs '-noverify', '-ea'
+        }
+        includeAndroidResources = true
+        returnDefaultValues = true
+    }
+    junitPlatform {
+        details 'summary'
+        filters {
+            engines {
+                include 'spek'
+            }
+        }
+        enableStandardTestTask true
+    }
+
+}
+dependencies {
+    println("Adding test dependencies for project \"" + project.name + "\"")
+    println('-' * 40)
+
+    testImplementation Deps.test_impl_junit4
+    testImplementation Deps.utils_kotlin_reflect
+    androidTestUtil Deps.test_util_orchestrator
+
+    testCompile Deps.test_junit_platform_launcher
+    testCompile Deps.test_spek
+    testCompile Deps.test_spek_junit
+    testCompile Deps.test_mockito_kotlin
+
+
+    androidTestImplementation Deps.test_instrumented_annotations
+    androidTestImplementation Deps.test_instrumented_support_runner
+    androidTestImplementation Deps.test_instrumented_support_runner_rules
+    androidTestImplementation Deps.test_instrumented_espresso
+    androidTestImplementation Deps.test_instrumented_hamcrest
+
+    testImplementation Deps.test_kluent
+    androidTestImplementation Deps.test_kluent
+
+    testImplementation("org.jetbrains.spek:spek-api:$Versions.spek") {
+        exclude group: "org.jetbrains.kotlin"
+    }
+    testImplementation("org.jetbrains.spek:spek-junit-platform-engine:$Versions.spek") {
+        exclude group: "org.junit.platform"
+        exclude group: "org.jetbrains.kotlin"
+    }
+
+    testImplementation junit5.unitTests()
+    testImplementation junit5.parameterized()
+    testCompileOnly junit5.unitTestsRuntime()
+}
+
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+    def debugTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/kotlin"
+
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = fileTree(dir: project.buildDir, includes: [
+            'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
+    ])
+}

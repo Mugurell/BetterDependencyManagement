@@ -1,0 +1,77 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "com.example.petrulingurar.movies_kotlin.movies_kotlin"
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            testCoverageEnabled true
+            applicationIdSuffix ".debug"
+        }
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+kotlin {
+    experimental { coroutines 'enable' }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    implementation Deps.kotlin_stdlib_jdk8
+    implementation Deps.android_app_compat_v7
+    implementation Deps.android_support_v13
+    implementation Deps.android_design
+    implementation Deps.android_constraint_layout
+    implementation Deps.android_recyclerview_v7
+    implementation Deps.android_cardview_v7
+
+    implementation Deps.network_retrofit
+    implementation Deps.network_square_okhttp
+    implementation Deps.network_retrofit_gson_converter
+    implementation Deps.network_gson
+    implementation Deps.network_retrofit_gson_converter
+    implementation Deps.network_retrofit_coroutines_adapter
+
+    implementation Deps.rx_java
+    implementation Deps.rx_android
+    implementation Deps.rx_kotlin
+    implementation Deps.rx_relay
+
+    implementation Deps.utils_dagger
+    implementation Deps.utils_dagger_support
+    implementation Deps.utils_dagger_android
+    implementation Deps.utils_glide
+    implementation Deps.utils_kotlin_coroutines
+
+    kapt Deps.apt_dagger
+    kapt Deps.apt_dagger_android
+    kapt Deps.apt_dagger_support
+    kapt Deps.apt_glide
+
+    apply from: '../config/static_analysis.gradle'
+    apply from: '../config/tests.gradle'
+}

@@ -1,0 +1,55 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+        maven { url "https://plugins.gradle.org/m2/" }      // for detekt
+    }
+    dependencies {
+        classpath Deps.gradle_plugin_kotlin
+        classpath Deps.gradle_plugin_android
+        classpath Deps.gradle_plugin_junit5
+        classpath Deps.gradle_plugin_jacoco
+        classpath Deps.gradle_plugin_detekt
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+// Add common kotlin and tests configurations for all subprojects
+//subprojects {
+//    afterEvaluate { project ->
+//        if (project.hasProperty("android")) {
+//            if (!project.properties.isEmpty() && project.properties.get("status").equals("release")) {
+////                println("Release flavour, will init analytics reporting")
+////                project.plugins.apply(fabric)
+//            }
+//
+//            if (project.properties.isEmpty()) {
+//                println("Project has no properties!!!")
+//            } else {
+//                for (Map.Entry<String, String> entry : project.properties.entrySet()) {
+//                    println("Property " + entry.key + ": " + entry.value)
+//                }
+//            }
+//
+//            android.defaultConfig {
+//                minSdkVersion Versions.min_sdk
+//                targetSdkVersion Versions.target_sdk
+//                versionCode Versions.version_code
+//                versionName Versions.version_name
+//                testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//            }
+//        }
+//    }
+//}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
